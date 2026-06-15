@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - CBT Al Wildan 15</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- HTML2PDF untuk Print Laporan -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aw: {
+                            navy: '#1e3a8a',
+                            blue: '#2563eb',
+                            green: '#10b981',
+                            yellow: '#eab308',
+                            light: '#f8fafc',
+                        }
+                    },
+                    maxWidth: {
+                        '4.5xl': '60rem',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['Courier New', 'ui-monospace', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Background Animasi */
+        @keyframes float-slow {
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(3deg) scale(1.02); }
+            100% { transform: translateY(0px) rotate(0deg) scale(1); }
+        }
+        @keyframes float-reverse {
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(25px) rotate(-3deg) scale(0.98); }
+            100% { transform: translateY(0px) rotate(0deg) scale(1); }
+        }
+        .animate-float-1 { animation: float-slow 18s ease-in-out infinite; }
+        .animate-float-2 { animation: float-reverse 22s ease-in-out infinite; }
+        .animate-float-3 { animation: float-slow 20s ease-in-out infinite; animation-delay: 2s; }
+        .animate-float-4 { animation: float-reverse 25s ease-in-out infinite; animation-delay: 1s; }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            border-radius: 1.5rem; 
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .btn-primary {
+            background-color: #2563eb; color: white;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover { background-color: #1d4ed8; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.23); transform: translateY(-1px); }
+        .btn-primary:disabled { background-color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .kertas-soal {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            color: #1e293b; border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .kertas-soal .cbt-radio:checked + div, .kertas-soal .cbt-checkbox:checked + div {
+            background-color: #eff6ff; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .btn-num { width: 32px; height: 32px; min-width: 32px; flex-shrink: 0; font-size: 0.75rem; border-radius: 0.5rem; transition: 0.2s;}
+        .btn-num.answered { background-color: #10b981; color: white; border-color: #059669; }
+        .btn-num.doubt { background-color: #eab308; color: white; border-color: #ca8a04; }
+        .btn-num.active { outline: 2.5px solid #2563eb; outline-offset: 1px; color: #1e293b; font-weight: 900;}
+
+        @media print {
+            body { background: white !important; color: black !important;}
+            #science-background, #sidebar, #mobile-nav, .no-print, .glass-card { display: none !important; box-shadow: none !important;}
+            #main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; background: white !important; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-slate-700 font-sans antialiased overflow-hidden flex h-screen w-screen relative selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Background Tematik Sains -->
+    <div id="science-background" class="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
+        <div class="absolute top-[5%] left-[5%] text-aw-blue opacity-[0.08] animate-float-1"><i data-lucide="microscope" class="w-[6rem] h-[6rem]"></i></div>
+        <div class="absolute top-[8%] right-[10%] text-aw-yellow opacity-[0.08] animate-float-2"><i data-lucide="telescope" class="w-[7rem] h-[7rem]"></i></div>
+        <div class="absolute bottom-[10%] left-[8%] text-aw-green opacity-[0.08] animate-float-3"><i data-lucide="brain" class="w-[8rem] h-[8rem]"></i></div>
+        <div class="absolute bottom-[5%] right-[5%] text-aw-navy opacity-[0.08] animate-float-4"><i data-lucide="compass" class="w-[6rem] h-[6rem]"></i></div>
+        <div class="absolute top-[40%] left-[3%] text-purple-600 opacity-[0.08] animate-float-2"><i data-lucide="dna" class="w-[7rem] h-[7rem]"></i></div>
+        <div class="absolute top-[35%] right-[8%] text-red-500 opacity-[0.08] animate-float-1"><i data-lucide="magnet" class="w-[6rem] h-[6rem]"></i></div>
+        <div class="absolute top-[60%] right-[25%] text-orange-400 opacity-[0.08] animate-float-3"><i data-lucide="rocket" class="w-[8rem] h-[8rem]"></i></div>
+        <div class="absolute bottom-[35%] left-[20%] text-teal-500 opacity-[0.08] animate-float-4"><i data-lucide="bot" class="w-[7rem] h-[7rem]"></i></div>
+        <div class="absolute top-[15%] left-[35%] text-pink-500 opacity-[0.08] animate-float-1"><i data-lucide="beaker" class="w-[6rem] h-[6rem]"></i></div>
+        <div class="absolute bottom-[25%] right-[35%] text-indigo-500 opacity-[0.08] animate-float-2"><i data-lucide="flask-conical" class="w-[7rem] h-[7rem]"></i></div>
+        <div class="absolute top-[20%] right-[25%] text-blue-400 opacity-[0.08] animate-float-3 font-serif font-black text-[6rem] leading-none">&alpha;</div>
+        <div class="absolute bottom-[15%] left-[35%] text-yellow-500 opacity-[0.08] animate-float-1 font-serif font-black text-[6rem] leading-none">&beta;</div>
+        <div class="absolute top-[50%] right-[10%] text-green-500 opacity-[0.08] animate-float-4 font-serif font-black text-[6rem] leading-none">&gamma;</div>
+        <div class="absolute bottom-[50%] left-[10%] text-red-400 opacity-[0.08] animate-float-2 font-serif font-black text-[7rem] leading-none">&Sigma;</div>
+    </div>
+
+    <!-- UI Overlay (Toast & Modal) -->
+    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] hidden px-6 py-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] text-white font-bold text-sm sm:text-base transition-all duration-300 scale-95 opacity-0 flex items-center gap-3 bg-slate-800/95 backdrop-blur-md"></div>
+    <div id="custom-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] hidden w-full max-w-sm px-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] p-8 scale-95 transition-transform duration-300 modal-content text-center overflow-hidden flex flex-col items-center border border-slate-100">
+            <div id="modal-icon" class="flex items-center justify-center w-20 h-20 rounded-full mb-5 bg-slate-50 text-blue-600 shadow-inner"></div>
+            <h3 id="modal-title" class="text-xl font-black text-slate-800 mb-2"></h3>
+            <p id="modal-desc" class="text-slate-500 mb-8 font-medium text-sm leading-relaxed"></p>
+            <button id="modal-btn" class="w-full font-bold py-3.5 rounded-xl transition btn-primary text-white"></button>
+        </div>
+    </div>
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9998] hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- VIEW 1: LOGIN -->
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden bg-white/20 backdrop-blur-sm">
+        <div class="glass-card p-10 md:p-12 w-full max-w-md relative z-10 text-center">
+            <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center bg-white rounded-full shadow-lg p-3 border border-slate-100">
+                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo AW15" class="w-full h-full object-contain relative z-10">
+            </div>
+            <h1 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight">Student Portal</h1>
+            <p class="text-xs font-bold text-aw-yellow uppercase tracking-widest mb-10 drop-shadow-sm">CBT Al Wildan 15</p>
+            <form id="login-form" class="space-y-5 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">ID Siswa / NISN</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="nisn" class="w-full pl-12 pr-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white outline-none transition placeholder-slate-400 shadow-inner" placeholder="Masukkan ID..." required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">Kata Sandi</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="password" id="password" class="w-full pl-12 pr-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white outline-none transition placeholder-slate-400 shadow-inner" placeholder="***********" required>
+                    </div>
+                </div>
+                <button type="submit" id="btn-login" class="w-full py-4 mt-8 btn-primary font-bold rounded-xl flex items-center justify-center gap-2">
+                    Masuk <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIEW 2: DASHBOARD UTAMA -->
+    <div id="app-view" class="hidden w-full h-full flex flex-col md:flex-row relative z-10">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-aw-navy text-slate-300 h-full z-20 shadow-2xl relative border-r border-blue-900/50">
+            <div class="p-6 flex items-center gap-3 border-b border-blue-800/50">
+                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-10 h-10 bg-white rounded-full p-1 shadow-sm">
+                <div>
+                    <h2 class="font-bold text-white tracking-wide">CBT Portal</h2>
+                    <p class="text-[10px] text-aw-yellow font-bold uppercase tracking-widest">Al Wildan 15</p>
+                </div>
+            </div>
+            <div class="p-4 mx-4 mt-6 bg-blue-950/50 rounded-2xl border border-blue-800/50 flex items-center gap-3 shadow-inner">
+                <div class="w-10 h-10 rounded-full bg-aw-blue flex items-center justify-center font-bold text-white shadow-md" id="avatar-initial"></div>
+                <div class="overflow-hidden">
+                    <p class="font-bold text-sm text-white truncate" id="student-name-sidebar">Nama Siswa</p>
+                    <p class="text-xs text-blue-300 mt-0.5" id="student-class-sidebar">Kelas</p>
+                </div>
+            </div>
+            <nav class="flex-1 px-4 py-8 space-y-2 text-sm font-medium">
+                <button onclick="switchTab('progress')" id="nav-progress" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-aw-blue text-white shadow-md font-bold transition">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+                </button>
+                <button onclick="switchTab('test')" id="nav-test" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-blue-200 hover:text-white hover:bg-blue-900/50 transition">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> Ujian & Try Out
+                </button>
+                <button onclick="switchTab('result')" id="nav-result" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-blue-200 hover:text-white hover:bg-blue-900/50 transition">
+                    <i data-lucide="award" class="w-5 h-5"></i> Laporan Nilai
+                </button>
+            </nav>
+            <div class="p-4 border-t border-blue-800/50">
+                <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 h-full overflow-y-auto relative w-full pb-20 md:pb-0 bg-transparent">
+            <!-- Header Mobile -->
+            <header class="md:hidden bg-aw-navy border-b border-blue-900/50 text-white p-4 flex justify-between items-center sticky top-0 z-20 shadow-lg">
+                <div class="flex items-center gap-2">
+                    <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-8 h-8 bg-white rounded-full p-0.5 shadow-sm">
+                    <h2 class="font-bold tracking-wide">CBT Portal</h2>
+                </div>
+                <button onclick="doLogout()" class="text-red-400 p-2"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+            </header>
+
+            <!-- TAB 1: PROGRESS / DASHBOARD -->
+            <div id="view-progress" class="p-4 md:p-8 animate-fade-in max-w-6xl mx-auto">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Dashboard Belajar</h2>
+                        <p class="text-slate-600 font-medium text-sm">Pantau perkembangan hasil ujimu di sini.</p>
+                    </div>
+                    <!-- DROPDOWN JENIS TES -->
+                    <div class="relative w-full sm:w-auto">
+                        <select id="test-type-filter" class="w-full appearance-none bg-white/80 backdrop-blur border border-white text-aw-navy px-4 py-2.5 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-aw-blue shadow-sm cursor-pointer transition">
+                            <option value="all">Semua Jenis Tes</option>
+                            <option value="tka">TKA</option>
+                            <option value="snbt">SNBT</option>
+                            <option value="sat">SAT</option>
+                            <option value="saj">SAJ</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    <div class="glass-card p-6 flex flex-col justify-center border-l-4 border-l-aw-blue relative overflow-hidden">
+                        <i data-lucide="activity" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-16 h-16 text-blue-500 opacity-10"></i>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 relative z-10">Jumlah Ujian</p>
+                        <p id="stat-total-ujian" class="text-4xl md:text-5xl font-black text-aw-navy relative z-10">0</p>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-center border-l-4 border-l-aw-yellow relative overflow-hidden">
+                        <i data-lucide="bar-chart-2" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-16 h-16 text-yellow-500 opacity-10"></i>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 relative z-10">Rata-rata Skor</p>
+                        <p id="stat-rata-rata" class="text-4xl md:text-5xl font-black text-aw-navy relative z-10">0</p>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-center border-l-4 border-l-aw-green relative overflow-hidden">
+                        <i data-lucide="award" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-16 h-16 text-green-500 opacity-10"></i>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 relative z-10 flex items-center">Nilai Tertinggi <span id="stat-max-mapel" class="hidden text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded ml-2 tracking-normal font-black"></span></p>
+                        <p id="stat-nilai-max" class="text-4xl md:text-5xl font-black text-aw-navy relative z-10">0</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card p-6">
+                        <h3 class="font-bold text-aw-navy mb-6 flex items-center gap-2 text-sm tracking-wide">
+                            <span class="p-1.5 bg-blue-100 text-aw-blue rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></span> Tren Hasil Belajar
+                        </h3>
+                        <div class="w-full h-64 relative"><canvas id="lineChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <h3 class="font-bold text-aw-navy mb-6 flex items-center gap-2 text-sm tracking-wide">
+                            <span class="p-1.5 bg-green-100 text-aw-green rounded-lg"><i data-lucide="pie-chart" class="w-4 h-4"></i></span> Sebaran Kemampuan
+                        </h3>
+                        <div class="w-full h-64 relative flex items-center justify-center">
+                            <p id="empty-radar" class="absolute text-sm text-slate-400 font-bold z-10">Belum ada data ujian</p>
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian Kelemahan / Fokus Perbaikan -->
+                <div class="glass-card p-6 md:p-8" id="weakness-section">
+                    <h3 class="font-bold text-lg md:text-xl text-aw-navy mb-1 flex items-center gap-2">
+                        <i data-lucide="target" class="w-5 h-5 text-red-500"></i> Fokus Perbaikan Topik
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-6">Area yang membutuhkan evaluasi berdasarkan analisis kelemahan dari ujian sebelumnya.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="weakness-container">
+                        <!-- Konten dinamis dari JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: UJIAN -->
+            <div id="view-test" class="hidden p-4 md:p-8 animate-fade-in max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Modul Ujian</h2>
+                <p class="text-slate-600 font-medium text-sm mb-8">Pilih mata pelajaran yang akan dikerjakan.</p>
+                <div id="subject-selection" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8"></div>
+                <div id="test-list-container" class="hidden">
+                    <button onclick="backToSubjects()" class="mb-6 flex items-center gap-2 text-aw-blue font-bold text-sm bg-blue-100/80 backdrop-blur px-4 py-2 rounded-lg hover:bg-blue-200 transition shadow-sm border border-blue-200">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+                    </button>
+                    <h3 id="selected-subject-title" class="text-xl font-black text-aw-navy mb-6 border-l-4 border-aw-blue pl-3">Daftar Ujian</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="to-cards-container"></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: HASIL (LIST) -->
+            <div id="view-result" class="hidden p-4 md:p-8 animate-fade-in max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Rekaman Nilai</h2>
+                <p class="text-slate-600 font-medium text-sm mb-8">Daftar hasil evaluasi ujian yang telah diselesaikan.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="result-cards-container"></div>
+            </div>
+
+            <!-- TAB 3 SUB: REPORT DETAIL -->
+            <div id="view-report-detail" class="hidden p-4 md:p-8 min-h-full">
+                <div class="flex justify-between items-center mb-6 no-print glass-card p-4 max-w-4xl mx-auto">
+                    <button onclick="closeReport()" class="flex items-center gap-2 text-slate-600 font-bold text-sm hover:text-aw-navy transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i> Kembali
+                    </button>
+                    <button onclick="printReport()" class="btn-primary px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 text-sm shadow-md">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak PDF
+                    </button>
+                </div>
+
+                <div id="printable-report" class="max-w-4xl mx-auto bg-white p-8 md:p-12 shadow-xl rounded-2xl text-slate-800 print:shadow-none print:p-0 print:m-0 font-sans border border-slate-200">
+                    <div class="text-center border-b-[2px] border-slate-100 pb-6 mb-8">
+                        <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-20 h-20 mx-auto mb-4">
+                        <h1 class="text-3xl md:text-4xl font-black text-aw-navy uppercase tracking-widest mb-1">Laporan Hasil Ujian</h1>
+                        <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Evaluasi Pembelajaran Mandiri</p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-10">
+                        <div class="space-y-3">
+                            <table class="text-left font-bold text-slate-700 text-sm md:text-base">
+                                <tr><td class="py-1.5 pr-8 text-slate-400 uppercase tracking-widest text-xs">Nama</td><td id="rep-nama"></td></tr>
+                                <tr><td class="py-1.5 pr-8 text-slate-400 uppercase tracking-widest text-xs">Kelas</td><td id="rep-kelas"></td></tr>
+                                <tr><td class="py-1.5 pr-8 text-slate-400 uppercase tracking-widest text-xs">Materi</td><td id="rep-ujian" class="text-aw-blue"></td></tr>
+                                <tr><td class="py-1.5 pr-8 text-slate-400 uppercase tracking-widest text-xs">Waktu</td><td id="rep-waktu"></td></tr>
+                            </table>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-100 p-6 rounded-2xl text-center min-w-[240px] shadow-inner">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nilai Akhir</p>
+                            <p id="rep-score" class="text-5xl font-black text-aw-navy mb-1 tracking-tighter">0</p>
+                            <p id="rep-cat" class="text-sm font-extrabold uppercase tracking-widest"></p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-black text-aw-navy uppercase tracking-widest border-b-[2px] border-aw-navy pb-2 inline-block mb-4 mt-2">
+                        Analisis Topikal
+                    </h3>
+                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                        <table class="w-full text-left border-collapse" id="report-table">
+                            <thead>
+                                <tr class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                    <th class="p-4 border-b border-slate-200">Sub-Topik Materi</th>
+                                    <th class="p-4 border-b border-slate-200 text-center w-24">Benar</th>
+                                    <th class="p-4 border-b border-slate-200 text-center w-24">Salah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-table-body">
+                                <!-- Dinamis disuntik oleh JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Mobile Bottom Nav -->
+        <nav id="mobile-nav" class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around p-2 pb-safe z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            <button onclick="switchTab('progress')" id="mob-nav-progress" class="flex flex-col items-center p-2 text-aw-blue nav-btn-mobile">
+                <div class="p-1.5 bg-blue-100 rounded-full mb-1"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
+                <span class="text-[9px] font-bold">Dashboard</span>
+            </button>
+            <button onclick="switchTab('test')" id="mob-nav-test" class="flex flex-col items-center p-2 text-slate-400 nav-btn-mobile">
+                <div class="p-1.5 rounded-full mb-1"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                <span class="text-[9px] font-bold">Ujian</span>
+            </button>
+            <button onclick="switchTab('result')" id="mob-nav-result" class="flex flex-col items-center p-2 text-slate-400 nav-btn-mobile">
+                <div class="p-1.5 rounded-full mb-1"><i data-lucide="award" class="w-5 h-5"></i></div>
+                <span class="text-[9px] font-bold">Laporan</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- VIEW 3: CBT EXECUTION -->
+    <div id="test-execution-view" class="fixed inset-0 z-[100] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 hidden flex-col">
+        <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center opacity-70">
+            <div class="absolute top-[5%] left-[5%] text-aw-blue opacity-[0.08] animate-float-1"><i data-lucide="rocket" class="w-[6rem] h-[6rem]"></i></div>
+            <div class="absolute bottom-[5%] right-[5%] text-purple-500 opacity-[0.08] animate-float-2"><i data-lucide="bot" class="w-[6rem] h-[6rem]"></i></div>
+            <div class="absolute top-[10%] right-[10%] text-aw-yellow opacity-[0.08] animate-float-3"><i data-lucide="magnet" class="w-[5rem] h-[5rem]"></i></div>
+            <div class="absolute bottom-[10%] left-[10%] text-aw-green opacity-[0.08] animate-float-4"><i data-lucide="beaker" class="w-[6rem] h-[6rem]"></i></div>
+            <div class="absolute top-[45%] left-[3%] text-teal-500 opacity-[0.08] animate-float-2"><i data-lucide="brain" class="w-[7rem] h-[7rem]"></i></div>
+            <div class="absolute top-[35%] right-[3%] text-red-400 opacity-[0.08] animate-float-1"><i data-lucide="dna" class="w-[7rem] h-[7rem]"></i></div>
+            <div class="absolute top-[20%] right-[30%] text-blue-400 opacity-[0.08] animate-float-3 font-serif font-black text-[5rem] leading-none">&alpha;</div>
+            <div class="absolute bottom-[20%] left-[30%] text-yellow-500 opacity-[0.08] animate-float-1 font-serif font-black text-[5rem] leading-none">&Sigma;</div>
+        </div>
+
+        <!-- CBT Header -->
+        <div class="bg-white/90 backdrop-blur-md border-b border-slate-200 p-2 md:p-3 flex justify-between items-center shadow-sm shrink-0 z-20">
+            <div class="flex items-center gap-3 pl-2">
+                <div class="p-1.5 bg-blue-100 text-aw-blue rounded-lg shadow-inner"><i data-lucide="book-open" class="w-4 h-4 md:w-5 md:h-5"></i></div>
+                <div>
+                    <h2 id="cbt-title" class="font-bold text-aw-navy text-sm md:text-base leading-tight truncate max-w-[150px] md:max-w-xs">Memuat...</h2>
+                    <p id="cbt-student" class="text-[10px] font-medium text-slate-500 mt-0.5 hidden sm:block">Nama Siswa</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 pr-2">
+                <div id="warning-badge" class="hidden items-center gap-1.5 bg-red-50 text-red-600 px-3 py-1.5 border border-red-200 rounded-lg text-xs font-bold animate-pulse shadow-sm">
+                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> <span id="warning-count-text" class="hidden sm:inline">Peringatan: 0/3</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white px-3 py-1.5 md:px-4 md:py-2 border border-slate-200 rounded-lg shadow-sm">
+                    <i data-lucide="clock" class="w-4 h-4 text-slate-500"></i>
+                    <span id="cbt-timer" class="font-black text-sm md:text-base text-slate-800 tracking-wider">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CBT Main Area -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 relative z-10" id="cbt-question-area">
+            <div class="max-w-4xl w-full mx-auto kertas-soal p-5 md:p-8 min-h-[400px]">
+                <!-- Soal & Gambar dinamis -->
+                <div id="cbt-content-dynamic" class="min-h-[250px] font-sans"></div>
+                
+                <div class="mt-6 flex justify-end border-t border-slate-100 pt-5">
+                    <button onclick="toggleDoubt()" id="btn-doubt-toggle" class="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-aw-yellow px-4 py-2 border-2 border-slate-200 hover:border-yellow-200 rounded-lg bg-white transition shadow-sm">
+                        <i data-lucide="flag" class="w-4 h-4"></i> Ragu-ragu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CBT Footer -->
+        <div class="bg-white/90 backdrop-blur-md border-t border-slate-200 p-2 md:p-3 shrink-0 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            <div class="max-w-4.5xl mx-auto flex flex-col md:flex-row gap-3 items-center justify-between">
+                <button onclick="navQuestion(-1)" id="btn-prev-q" class="w-full md:w-auto px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> <span class="hidden sm:inline">Sebelumnya</span>
+                </button>
+                <div class="flex-1 w-full overflow-x-auto pb-1 px-2 hide-scrollbar relative">
+                    <div class="flex gap-1.5 justify-start md:justify-center min-w-max px-2" id="grid-numbers"></div>
+                </div>
+                <button onclick="navQuestion(1)" id="btn-next-q" class="w-full md:w-auto px-4 py-2 btn-primary rounded-lg text-xs font-bold transition flex justify-center items-center gap-2 shadow-md">
+                    <span class="hidden sm:inline">Selanjutnya</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="max-w-4.5xl mx-auto flex justify-center gap-4 mt-1.5 pt-1.5 text-[10px] font-bold text-slate-500">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 border-2 border-slate-300 rounded-[3px] bg-white"></span> Kosong</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-aw-green rounded-[3px]"></span> Terjawab</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-aw-yellow rounded-[3px]"></span> Ragu-ragu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        lucide.createIcons();
+
+        /* ======== LINK API GOOGLE APPS SCRIPT ======== */
+        const API_URL = "https://script.google.com/macros/s/AKfycbxoiGCoEl-mktO9pQtQxDXHIixp-eqToLUIfr10DgazZnu8y0AErvE5ju2UShC_xPuncg/exec";
+
+        let currentStudent = null;
+        let activeTab = 'progress';
+        let availableExams = [];
+        let studentResults = [];
+        let lineChartInstance, radarChartInstance;
+        let currentFilter = 'all'; // State Filter Jenis Ujian
+        
+        let currentExamInfo = {};
+        let cbtQuestions = [];
+        let inTestMode = false, cbtCurrentIndex = 0, cbtAnswers = {}, cbtDoubts = {}, cbtTimerInterval, timeLeft = 0, warningsCount = 0;
+
+        /* ======== HELPER FUNCTIONS ======== */
+        async function callAPI(payload) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST', body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                return { status: 'error', message: 'Koneksi ke server gagal. Cek internet Anda.' };
+            }
+        }
+
+        function formatTanggal(isoString) {
+            try {
+                const d = new Date(isoString);
+                if(isNaN(d.getTime())) return isoString; // fallback
+                const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+                return d.toLocaleDateString('id-ID', options);
+            } catch(e) { return isoString; }
+        }
+
+        function showToast(msg, type='info') {
+            const toast = document.getElementById('toast');
+            let color = 'text-blue-400';
+            if(type === 'success') color = 'text-green-400';
+            if(type === 'error' || type === 'warning') color = 'text-red-400';
+            toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] px-6 py-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] text-white font-bold text-sm transition-all duration-300 scale-100 opacity-100 flex items-center gap-3 bg-slate-800/95 backdrop-blur-md`;
+            toast.innerHTML = `<i data-lucide="${type==='success'?'check-circle':(type==='error'?'alert-triangle':'info')}" class="w-5 h-5 ${color}"></i> ${msg}`;
+            lucide.createIcons();
+            setTimeout(() => {
+                toast.classList.remove('scale-100', 'opacity-100');
+                toast.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        function showModal(title, desc, iconName, btnText, colorClass, callback) {
+            const modal = document.getElementById('custom-modal');
+            const overlay = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            
+            const iconContainer = document.getElementById('modal-icon');
+            let bgClass = colorClass === 'red' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600';
+            let btnClass = colorClass === 'red' ? 'bg-red-500 hover:bg-red-600' : 'btn-primary';
+            
+            iconContainer.className = `flex items-center justify-center w-20 h-20 rounded-full mb-5 shadow-inner ${bgClass}`;
+            iconContainer.innerHTML = `<i data-lucide="${iconName}" class="w-10 h-10"></i>`;
+            
+            const btn = document.getElementById('modal-btn');
+            btn.innerText = btnText;
+            btn.className = `w-full font-bold py-3.5 rounded-xl transition text-white shadow-lg ${btnClass}`;
+            btn.onclick = () => {
+                modal.classList.add('opacity-0'); overlay.classList.add('opacity-0');
+                setTimeout(() => { modal.classList.add('hidden'); overlay.classList.add('hidden'); if(callback) callback(); }, 300);
+            };
+
+            overlay.classList.remove('hidden'); modal.classList.remove('hidden');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); modal.classList.remove('opacity-0'); }, 10);
+            lucide.createIcons();
+        }
+
+        function getSubjectStyle(name) {
+            const n = (name || '').toLowerCase();
+            if(n.includes('matematika') || n.includes('kuantitatif')) return { icon: 'calculator', color: 'blue' };
+            if(n.includes('fisika')) return { icon: 'atom', color: 'green' };
+            if(n.includes('biologi')) return { icon: 'microscope', color: 'yellow' };
+            if(n.includes('inggris')) return { icon: 'globe', color: 'navy' };
+            if(n.includes('kimia')) return { icon: 'flask-conical', color: 'pink' };
+            if(n.includes('literasi') || n.includes('bacaan')) return { icon: 'book-open', color: 'purple' };
+            return { icon: 'book-open', color: 'slate' };
+        }
+
+        /* ======== LOGIKA FILTER DASHBOARD ======== */
+        document.getElementById('test-type-filter').addEventListener('change', function(e) {
+            currentFilter = e.target.value;
+            let filterName = currentFilter === 'all' ? 'Semua Jenis Tes' : currentFilter.toUpperCase();
+            showToast('Memuat data ' + filterName + '...', 'info');
+            updateDashboardStats();
+        });
+
+        function getFilteredResults() {
+            if (currentFilter === 'all') return studentResults;
+            return studentResults.filter(res => {
+                let ex = availableExams.find(x => String(x.idUjian).trim() === String(res.idUjian).trim());
+                return ex && ex.jenisUjian && String(ex.jenisUjian).trim().toLowerCase() === currentFilter.toLowerCase();
+            });
+        }
+
+        /* ======== LOGIN ======== */
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const nisn = document.getElementById('nisn').value;
+            const password = document.getElementById('password').value;
+            
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...';
+            btn.disabled = true; lucide.createIcons();
+
+            const res = await callAPI({ action: 'student_login', nisn, password });
+            
+            if(res.status === 'success') {
+                currentStudent = res.data;
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+                
+                document.getElementById('student-name-sidebar').innerText = currentStudent.nama;
+                document.getElementById('student-class-sidebar').innerText = currentStudent.kelas;
+                document.getElementById('avatar-initial').innerText = currentStudent.nama.charAt(0).toUpperCase();
+                
+                showToast('Login berhasil, selamat datang!', 'success');
+                initDashboard(); 
+            } else {
+                showToast(res.message || 'Login Gagal', 'error');
+                btn.innerHTML = 'Masuk <i data-lucide="arrow-right" class="w-5 h-5"></i>';
+                btn.disabled = false; lucide.createIcons();
+            }
+        });
+
+        function doLogout() {
+            showModal('Konfirmasi Logout', 'Apakah kamu yakin ingin keluar dari portal ujian?', 'log-out', 'Keluar', 'red', () => { location.reload(); });
+        }
+
+        /* ======== DASHBOARD ======== */
+        async function initDashboard() {
+            const [examsRes, resultsRes] = await Promise.all([
+                callAPI({ action: 'get_available_exams' }),
+                callAPI({ action: 'get_student_results', nisn: currentStudent.nisn })
+            ]);
+
+            availableExams = examsRes.status === 'success' ? examsRes.data : [];
+            studentResults = resultsRes.status === 'success' ? resultsRes.data : [];
+
+            updateDashboardStats();
+            renderSubjects();
+            renderResultsList();
+        }
+
+        function updateDashboardStats() {
+            const filteredResults = getFilteredResults();
+            document.getElementById('stat-total-ujian').innerText = filteredResults.length;
+            
+            let totalSkor = 0, maxSkor = 0, maxMapel = '';
+            let combinedWeakness = {};
+
+            filteredResults.forEach(res => {
+                let skor = parseFloat(res.skorAkhir) || 0;
+                totalSkor += skor;
+                if(skor > maxSkor) {
+                    maxSkor = skor;
+                    let ex = availableExams.find(x => x.idUjian === res.idUjian);
+                    maxMapel = ex ? ex.mataPelajaran : 'Umum';
+                }
+
+                let analisisObj = {};
+                try { 
+                    analisisObj = typeof res.analisisTopik === 'string' ? JSON.parse(res.analisisTopik) : (res.analisisTopik || {});
+                } catch(e) { }
+
+                for(let top in analisisObj) {
+                    if(!combinedWeakness[top]) combinedWeakness[top] = {};
+                    for(let sub in analisisObj[top]) {
+                        if(!combinedWeakness[top][sub]) combinedWeakness[top][sub] = 0;
+                        combinedWeakness[top][sub] += analisisObj[top][sub].salah;
+                    }
+                }
+            });
+
+            let avg = filteredResults.length > 0 ? (totalSkor / filteredResults.length).toFixed(1) : 0;
+            document.getElementById('stat-rata-rata').innerText = avg;
+            document.getElementById('stat-nilai-max').innerText = maxSkor;
+            
+            const badgeMaxMapel = document.getElementById('stat-max-mapel');
+            if(maxSkor > 0) { badgeMaxMapel.innerText = maxMapel.toUpperCase(); badgeMaxMapel.classList.remove('hidden'); } 
+            else { badgeMaxMapel.classList.add('hidden'); }
+
+            renderCharts(filteredResults);
+
+            // Render UI Kelemahan Topik
+            const wContainer = document.getElementById('weakness-container');
+            wContainer.innerHTML = '';
+            let hasWeakness = false; let wHtml = '';
+            
+            const colorClasses = [
+                { bg: 'bg-purple-100', text: 'text-purple-700' },
+                { bg: 'bg-blue-100', text: 'text-blue-700' },
+                { bg: 'bg-orange-100', text: 'text-orange-700' },
+                { bg: 'bg-pink-100', text: 'text-pink-700' }
+            ];
+            let cIdx = 0;
+
+            for(let top in combinedWeakness) {
+                let subs = [];
+                for(let sub in combinedWeakness[top]) {
+                    if(combinedWeakness[top][sub] > 0) subs.push({name: sub, salah: combinedWeakness[top][sub]});
+                }
+                if(subs.length > 0) {
+                    hasWeakness = true;
+                    subs.sort((a,b) => b.salah - a.salah); // Tampilkan yang salah terbanyak
+                    let c = colorClasses[cIdx % colorClasses.length]; cIdx++;
+                    wHtml += `
+                        <div class="p-5 bg-white/60 rounded-2xl border border-white/80 shadow-sm">
+                            <div class="flex items-center gap-3 mb-4 border-b border-slate-200/60 pb-3">
+                                <span class="px-2.5 py-1 ${c.bg} ${c.text} text-[10px] font-bold uppercase rounded-md shadow-sm">${top}</span>
+                            </div>
+                            <ul class="space-y-3 pl-2 ml-1 text-sm">
+                                ${subs.slice(0, 3).map(s => `
+                                    <li class="flex justify-between items-center text-slate-700 font-medium">
+                                        <span>${s.name}</span>
+                                        <span class="text-[10px] text-red-600 bg-red-100 border border-red-200 px-2 py-1 rounded-full font-bold shadow-sm">Salah ${s.salah}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            }
+            if(!hasWeakness) wContainer.innerHTML = '<p class="text-slate-500 text-sm font-medium col-span-2">Bagus! Belum ada kelemahan signifikan yang terdeteksi pada jenis tes ini.</p>';
+            else wContainer.innerHTML = wHtml;
+        }
+
+        function renderCharts(filteredResults) {
+            Chart.defaults.color = '#64748b'; Chart.defaults.font.family = 'Inter, sans-serif';
+            const lineLabels = filteredResults.map((r, i) => `TO ${filteredResults.length - i}`);
+            const lineData = filteredResults.map(r => parseFloat(r.skorAkhir)).reverse();
+
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+            let gradient = ctxLine.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)'); gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+            if(lineChartInstance) lineChartInstance.destroy();
+            lineChartInstance = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: lineLabels.length ? lineLabels : ['-'],
+                    datasets: [{
+                        label: 'Skor Akhir', data: lineData.length ? lineData : [0],
+                        borderColor: '#2563eb', backgroundColor: gradient, borderWidth: 3, tension: 0.4, fill: true,
+                        pointBackgroundColor: '#ffffff', pointBorderColor: '#2563eb', pointBorderWidth: 2, pointRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, grid: {color: '#e2e8f0', borderDash: [5,5]}, border: {display: false} }, x: { grid: {display: false}, border: {display: false} } } }
+            });
+
+            let mapelStats = {};
+            filteredResults.forEach(res => {
+                let ex = availableExams.find(x => x.idUjian === res.idUjian);
+                let mapel = ex ? ex.mataPelajaran.toUpperCase() : 'UMUM';
+                if(!mapelStats[mapel]) mapelStats[mapel] = { total: 0, count: 0 };
+                mapelStats[mapel].total += parseFloat(res.skorAkhir); mapelStats[mapel].count++;
+            });
+            const radarLabels = Object.keys(mapelStats);
+            const radarData = radarLabels.map(m => (mapelStats[m].total / mapelStats[m].count).toFixed(1));
+
+            const lblRadar = document.getElementById('empty-radar');
+            if(radarLabels.length > 0) lblRadar.classList.add('hidden'); else lblRadar.classList.remove('hidden');
+
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            if(radarChartInstance) radarChartInstance.destroy();
+            radarChartInstance = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: radarLabels.length ? radarLabels : ['-','-','-'],
+                    datasets: [{
+                        label: 'Kemampuan Rata-rata', data: radarData.length ? radarData : [0,0,0],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981', borderWidth: 2, pointBackgroundColor: '#10b981', pointRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: {stepSize: 20, display: false}, grid: { color: '#e2e8f0' }, angleLines: { color: '#e2e8f0' }, pointLabels: { font: { weight: 'bold', size: 10 }, color: '#475569' } } } }
+            });
+        }
+
+        /* ======== MENU UJIAN ======== */
+        function renderSubjects() {
+            let uniqueSubjects = [...new Set(availableExams.map(ex => ex.mataPelajaran))];
+            const container = document.getElementById('subject-selection');
+            container.innerHTML = '';
+            if(uniqueSubjects.length === 0) { container.innerHTML = '<p class="text-slate-500 italic col-span-2">Belum ada ujian yang tersedia saat ini.</p>'; return; }
+
+            uniqueSubjects.forEach(subjectName => {
+                let style = getSubjectStyle(subjectName);
+                container.innerHTML += `
+                    <div onclick="showTestList('${subjectName}')" class="glass-card p-6 text-center cursor-pointer group hover:bg-white transition-all duration-300">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-${style.color}-100 text-${style.color}-600 flex items-center justify-center mb-4 group-hover:bg-${style.color}-500 group-hover:text-white transition shadow-sm border border-${style.color}-200">
+                            <i data-lucide="${style.icon}" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">${subjectName}</h4>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function showTestList(subjectName) {
+            document.getElementById('subject-selection').classList.add('hidden');
+            document.getElementById('test-list-container').classList.remove('hidden');
+            document.getElementById('selected-subject-title').innerText = subjectName;
+
+            const container = document.getElementById('to-cards-container');
+            container.innerHTML = '';
+            
+            const tests = availableExams.filter(t => t.mataPelajaran === subjectName);
+            tests.forEach(t => {
+                const isCompleted = studentResults.some(res => String(res.idUjian).trim() === String(t.idUjian).trim());
+                
+                container.innerHTML += `
+                    <div class="glass-card p-6 flex flex-col justify-between h-full bg-white/80">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="font-bold text-lg text-aw-navy leading-tight pr-4 drop-shadow-sm">${t.judulUjian}</h4>
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase shadow-sm ${!isCompleted ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">${!isCompleted ? 'AKTIF' : 'SELESAI'}</span>
+                            </div>
+                            <div class="flex gap-4 text-xs text-slate-600 mb-6 bg-white/60 p-2.5 rounded-lg border border-slate-200 w-fit font-medium shadow-inner">
+                                <span class="flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i> ${t.totalSoal} Soal</span>
+                                <span class="flex items-center gap-1.5 border-l border-slate-300 pl-4"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> ${t.durasi} Menit</span>
+                            </div>
+                        </div>
+                        ${!isCompleted 
+                            ? `<button onclick="startTest('${t.idUjian}', '${t.judulUjian}', '${t.durasi}')" class="w-full py-3 btn-primary rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-md hover:shadow-lg">Mulai Ujian <i data-lucide="arrow-right" class="w-4 h-4"></i></button>`
+                            : `<button disabled class="w-full py-3 bg-slate-100 border border-slate-200 text-slate-400 font-bold text-sm rounded-xl cursor-not-allowed">Sudah Dikerjakan</button>`
+                        }
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function backToSubjects() {
+            document.getElementById('test-list-container').classList.add('hidden');
+            document.getElementById('subject-selection').classList.remove('hidden');
+        }
+
+        /* ======== LOGIKA CBT & SUBMIT ======== */
+        function updateTimerDisplay() {
+            const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+            const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            const timerEl = document.getElementById('cbt-timer');
+            if(timerEl) {
+                timerEl.innerText = `${h}:${m}:${s}`;
+                if(timeLeft < 300) timerEl.classList.add('text-red-500', 'animate-pulse');
+                else timerEl.classList.remove('text-red-500', 'animate-pulse');
+            }
+        }
+
+        async function startTest(testId, title, durationMinutes) {
+            showModal('Peringatan Tata Tertib', `Dilarang keras membuka tab/aplikasi lain. Pastikan koneksi stabil.`, 'alert-octagon', 'Saya Mengerti, Mulai', 'blue', async () => {
+                showToast('Mengambil data soal dari server...', 'info');
+                const res = await callAPI({ action: 'get_exam_data', idUjian: testId });
+
+                if(res.status !== 'success' || !res.soal || res.soal.length === 0) {
+                    showToast('Gagal memuat soal. Silakan coba lagi.', 'error'); return;
+                }
+
+                currentExamInfo = res.identitas;
+                cbtQuestions = res.soal.map(q => {
+                    let opsiArr = [];
+                    try { opsiArr = JSON.parse(q.dataOpsi); } catch(e){}
+                    return {
+                        id: q.nomorSoal, type: q.tipeSoal,
+                        stimulus: q.stimulus, question: q.soalUtama,
+                        options: opsiArr, answerKey: q.kunciJawaban, 
+                        topic: q.topik, subTopik: q.subTopik,
+                        urlGambar: q.urlGambar 
+                    };
+                });
+
+                document.getElementById('app-view').classList.add('hidden');
+                document.getElementById('test-execution-view').classList.remove('hidden');
+                document.getElementById('test-execution-view').classList.add('flex');
+                document.getElementById('cbt-title').innerText = title;
+                document.getElementById('cbt-student').innerText = `${currentStudent.nama} [${currentStudent.nisn}]`;
+
+                inTestMode = true; cbtCurrentIndex = 0; cbtAnswers = {}; cbtDoubts = {}; warningsCount = 0;
+                document.getElementById('warning-badge').classList.add('hidden');
+
+                let dur = parseInt(durationMinutes);
+                if (isNaN(dur) || dur <= 0) dur = 60; // fallback 60 menit
+                timeLeft = dur * 60;
+                
+                updateTimerDisplay();
+                cbtTimerInterval = setInterval(() => {
+                    timeLeft--; updateTimerDisplay();
+                    if(timeLeft <= 0) {
+                        clearInterval(cbtTimerInterval);
+                        showToast('Waktu Habis! Ujian otomatis dikumpulkan.', 'error');
+                        processSubmitTest();
+                    }
+                }, 1000);
+
+                renderNumberGrid();
+                renderCurrentQuestion();
+            });
+        }
+
+        function renderNumberGrid() {
+            const grid = document.getElementById('grid-numbers');
+            grid.innerHTML = '';
+            cbtQuestions.forEach((q, index) => {
+                let classes = 'btn-num flex items-center justify-center font-bold border border-slate-200 text-slate-600 bg-white cursor-pointer hover:bg-slate-50 shadow-sm';
+                if(cbtDoubts[index]) classes += ' doubt';
+                else if(cbtAnswers[index] !== undefined && cbtAnswers[index] !== '' && cbtAnswers[index].length !== 0) classes += ' answered';
+                if(index === cbtCurrentIndex) classes += ' active';
+                grid.innerHTML += `<button onclick="jumpToQuestion(${index})" class="${classes}">${index + 1}</button>`;
+            });
+        }
+
+        function renderCurrentQuestion() {
+            const q = cbtQuestions[cbtCurrentIndex];
+            
+            const btnDoubt = document.getElementById('btn-doubt-toggle');
+            if(cbtDoubts[cbtCurrentIndex]) btnDoubt.className = 'flex items-center gap-1.5 text-xs font-bold text-aw-yellow px-4 py-2 border-2 border-yellow-300 rounded-lg bg-yellow-50 transition shadow-sm';
+            else btnDoubt.className = 'flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-aw-yellow px-4 py-2 border-2 border-slate-200 hover:border-yellow-200 rounded-lg bg-white transition shadow-sm';
+
+            document.getElementById('btn-prev-q').disabled = cbtCurrentIndex === 0;
+            const btnNext = document.getElementById('btn-next-q');
+            if (cbtCurrentIndex === cbtQuestions.length - 1) {
+                btnNext.innerHTML = '<span class="hidden sm:inline">Selesai & Kumpul</span> <i data-lucide="check-circle-2" class="w-4 h-4"></i>';
+                btnNext.className = 'w-full md:w-auto px-4 py-2 bg-aw-green hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition flex justify-center items-center gap-2 shadow-md';
+                btnNext.onclick = confirmSubmitTest;
+            } else {
+                btnNext.innerHTML = '<span class="hidden sm:inline">Selanjutnya</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>';
+                btnNext.className = 'w-full md:w-auto px-4 py-2 btn-primary rounded-lg text-xs font-bold transition flex justify-center items-center gap-2 shadow-md';
+                btnNext.onclick = () => navQuestion(1);
+            }
+
+            let html = '';
+            
+            if(q.stimulus) html += `<div class="bg-blue-50/70 p-4 md:p-5 rounded-xl border border-blue-200 mb-6 text-[13px] text-slate-800 leading-relaxed font-medium whitespace-pre-wrap shadow-inner">${q.stimulus}</div>`;
+            
+            if(q.urlGambar && q.urlGambar.trim() !== '') {
+                html += `<div class="flex justify-center mb-6"><img src="${q.urlGambar}" alt="Gambar Soal" class="max-w-full h-auto max-h-64 object-contain rounded-lg shadow-sm border border-slate-200"></div>`;
+            }
+
+            html += `<h4 class="text-sm font-bold text-slate-900 mb-6 leading-relaxed">${q.question}</h4>`;
+
+            if(q.type === 'pg_tunggal' || q.type === 'pg_majemuk') {
+                html += '<div class="space-y-3">';
+                Object.keys(q.options).forEach(optKey => {
+                    const optText = q.options[optKey];
+                    if(q.type === 'pg_tunggal') {
+                        const isChecked = cbtAnswers[cbtCurrentIndex] === optKey ? 'checked' : '';
+                        html += `
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="radio" name="q_opt" value="${optKey}" class="hidden cbt-radio key-input" onchange="saveAnswer('${optKey}')" ${isChecked}>
+                                <div class="flex items-center gap-4 w-full p-4 rounded-xl border-2 border-slate-100 bg-white group-hover:border-blue-300 group-hover:bg-blue-50/50 transition shadow-sm">
+                                    <span class="w-7 h-7 rounded-full border-2 border-slate-300 flex items-center justify-center text-sm font-bold text-slate-500 group-hover:border-blue-500 group-hover:text-blue-600 bg-white shrink-0 shadow-sm">${optKey}</span>
+                                    <span class="text-sm font-medium text-slate-700">${optText}</span>
+                                </div>
+                            </label>`;
+                    } else {
+                        const ansArr = cbtAnswers[cbtCurrentIndex] || [];
+                        const isChecked = ansArr.includes(optKey) ? 'checked' : '';
+                        html += `
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" value="${optKey}" class="hidden cbt-checkbox key-input" onchange="saveMultiAnswer(this)" ${isChecked}>
+                                <div class="flex items-center gap-4 w-full p-4 rounded-xl border-2 border-slate-100 bg-white group-hover:border-blue-300 group-hover:bg-blue-50/50 transition shadow-sm">
+                                    <div class="w-6 h-6 bg-white rounded border-2 border-slate-300 flex items-center justify-center text-transparent group-hover:border-blue-500 group-hover:text-blue-100 shrink-0 shadow-sm"><i data-lucide="check" class="w-4 h-4"></i></div>
+                                    <span class="text-sm font-medium text-slate-700">${optText}</span>
+                                </div>
+                            </label>`;
+                    }
+                });
+                html += '</div>';
+            }
+
+            document.getElementById('cbt-content-dynamic').innerHTML = html;
+            lucide.createIcons();
+            document.querySelectorAll('.cbt-checkbox:checked + div div').forEach(box => {
+                box.classList.replace('text-transparent', 'text-blue-600');
+                box.classList.replace('border-slate-300', 'border-blue-600');
+            });
+        }
+
+        function saveAnswer(val) { cbtAnswers[cbtCurrentIndex] = val; renderNumberGrid(); }
+        function saveMultiAnswer(el) {
+            let arr = cbtAnswers[cbtCurrentIndex] || [];
+            if(el.checked) { if(!arr.includes(el.value)) arr.push(el.value); }
+            else { arr = arr.filter(v => v !== el.value); }
+            cbtAnswers[cbtCurrentIndex] = arr;
+            renderNumberGrid(); renderCurrentQuestion(); 
+        }
+        function toggleDoubt() { cbtDoubts[cbtCurrentIndex] = !cbtDoubts[cbtCurrentIndex]; renderNumberGrid(); renderCurrentQuestion(); }
+        function navQuestion(dir) {
+            cbtCurrentIndex += dir;
+            if(cbtCurrentIndex < 0) cbtCurrentIndex = 0;
+            if(cbtCurrentIndex >= cbtQuestions.length) cbtCurrentIndex = cbtQuestions.length - 1;
+            renderNumberGrid(); renderCurrentQuestion();
+            document.getElementById('cbt-question-area').scrollTo(0,0);
+        }
+        function jumpToQuestion(idx) { cbtCurrentIndex = idx; renderNumberGrid(); renderCurrentQuestion(); document.getElementById('cbt-question-area').scrollTo(0,0); }
+
+        function confirmSubmitTest() { showModal('Konfirmasi Kumpul', 'Apakah kamu yakin ingin mengakhiri ujian dan mengirimkan semua jawaban?', 'help-circle', 'Kumpulkan Sekarang', 'blue', processSubmitTest); }
+
+        /* ======== GRADING & SUBMIT ======== */
+        async function processSubmitTest() {
+            clearInterval(cbtTimerInterval); inTestMode = false;
+            const execView = document.getElementById('test-execution-view');
+            execView.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center h-full w-full bg-white/95 backdrop-blur-md">
+                    <i data-lucide="loader-2" class="w-12 h-12 text-blue-600 animate-spin mb-4"></i>
+                    <h2 class="text-xl font-black text-slate-800 tracking-wide drop-shadow-sm">Mengkalkulasi & Menyimpan Jawaban...</h2>
+                </div>`;
+            lucide.createIcons();
+
+            let correct = 0; let total = cbtQuestions.length;
+            let subtopicAnalysis = {}; 
+
+            cbtQuestions.forEach((q, idx) => {
+                let isCorrect = false; let userAns = cbtAnswers[idx];
+                let keyArr = [];
+                try { keyArr = typeof q.answerKey === 'string' && q.answerKey.includes('[') ? JSON.parse(q.answerKey) : [q.answerKey]; } catch(e) { keyArr = [q.answerKey]; }
+
+                if(q.type === 'pg_tunggal') isCorrect = (userAns === keyArr[0]);
+                else if(q.type === 'pg_majemuk') {
+                    let uArr = userAns || [];
+                    isCorrect = (keyArr.length === uArr.length && keyArr.every(v => uArr.includes(v)));
+                }
+                
+                let topName = q.topic || 'Umum';
+                let subName = q.subTopik || 'Campuran';
+                
+                if(!subtopicAnalysis[topName]) subtopicAnalysis[topName] = {};
+                if(!subtopicAnalysis[topName][subName]) subtopicAnalysis[topName][subName] = { benar: 0, salah: 0 };
+                
+                if(isCorrect) { correct++; subtopicAnalysis[topName][subName].benar++; } 
+                else { subtopicAnalysis[topName][subName].salah++; }
+            });
+
+            let finalScore = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
+
+            const res = await callAPI({
+                action: 'submit_exam',
+                nisn: currentStudent.nisn, namaSiswa: currentStudent.nama,
+                idUjian: currentExamInfo.idUjian, judulUjian: currentExamInfo.judulUjian,
+                skorAkhir: finalScore,
+                analisisTopik: subtopicAnalysis
+            });
+
+            if(res.status === 'success') {
+                showToast('Ujian berhasil dikumpulkan!', 'success');
+                await initDashboard(); 
+                document.getElementById('test-execution-view').classList.add('hidden');
+                document.getElementById('test-execution-view').classList.remove('flex');
+                document.getElementById('app-view').classList.remove('hidden');
+                switchTab('result'); 
+            } else {
+                showToast('Gagal menyimpan hasil: ' + res.message, 'error');
+                setTimeout(()=>location.reload(), 2000);
+            }
+        }
+
+        /* ======== REPORT NILAI ======== */
+        function renderResultsList() {
+            const container = document.getElementById('result-cards-container');
+            container.innerHTML = '';
+            if(studentResults.length === 0) { container.innerHTML = '<p class="text-slate-500 italic col-span-2">Belum ada ujian yang diselesaikan.</p>'; return; }
+
+            studentResults.forEach(r => {
+                container.innerHTML += `
+                    <div class="glass-card p-6 flex items-center justify-between group cursor-pointer bg-white/80" onclick="openReportDetail('${r.idSubmit}')">
+                        <div class="flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-aw-blue flex items-center justify-center font-black text-2xl border border-blue-200 shadow-sm">
+                                ${parseFloat(r.skorAkhir).toFixed(0)}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base mb-1 group-hover:text-aw-blue transition drop-shadow-sm">${r.judulUjian}</h4>
+                                <p class="text-[10px] font-bold text-slate-600 bg-white px-2.5 py-1 rounded-md inline-flex items-center gap-1.5 border border-slate-200 shadow-sm"><i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i> ${formatTanggal(r.waktuSubmit)}</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition border border-slate-100 group-hover:border-blue-200 shadow-sm">
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openReportDetail(submitId) {
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-report-detail').classList.remove('hidden');
+            window.scrollTo(0,0);
+            
+            const r = studentResults.find(x => x.idSubmit === submitId);
+            document.getElementById('rep-nama').innerText = `: ${currentStudent.nama}`;
+            document.getElementById('rep-kelas').innerText = `: ${currentStudent.kelas}`;
+            document.getElementById('rep-ujian').innerText = `: ${r.judulUjian}`;
+            document.getElementById('rep-waktu').innerText = `: ${formatTanggal(r.waktuSubmit)}`; 
+            
+            let skor = parseFloat(r.skorAkhir);
+            document.getElementById('rep-score').innerText = skor.toFixed(0);
+            
+            const lblCat = document.getElementById('rep-cat');
+            if(skor < 40) { lblCat.innerText = 'Kritis'; lblCat.className = 'text-sm font-extrabold uppercase tracking-widest text-red-500'; }
+            else if(skor < 70) { lblCat.innerText = 'Cukup'; lblCat.className = 'text-sm font-extrabold uppercase tracking-widest text-yellow-500'; }
+            else { lblCat.innerText = 'Sangat Baik'; lblCat.className = 'text-sm font-extrabold uppercase tracking-widest text-green-500'; }
+            
+            let analisisObj = {};
+            try { analisisObj = typeof r.analisisTopik === 'string' ? JSON.parse(r.analisisTopik) : r.analisisTopik; } catch(e) {}
+            
+            let tbodyHtml = '';
+            for(let top in analisisObj) {
+                tbodyHtml += `<tr class="bg-slate-100 border-b border-slate-200"><td colspan="3" class="p-4"><div class="flex items-center gap-2 font-black text-slate-800 text-sm"><i data-lucide="folder" class="w-4 h-4 text-blue-600"></i> ${top.toUpperCase()}</div></td></tr>`;
+                for(let sub in analisisObj[top]) {
+                    const stats = analisisObj[top][sub];
+                    tbodyHtml += `
+                        <tr class="hover:bg-slate-50/50 bg-white transition-colors">
+                            <td class="p-4 font-medium text-slate-600 border-b border-slate-100 pl-10 text-sm">${sub}</td>
+                            <td class="p-4 text-center border-b border-slate-100"><span class="bg-green-100 text-green-700 px-3 py-1 rounded border border-green-200 font-bold text-xs shadow-sm">${stats.benar}</span></td>
+                            <td class="p-4 text-center border-b border-slate-100"><span class="bg-red-100 text-red-600 px-3 py-1 rounded border border-red-200 font-bold text-xs shadow-sm">${stats.salah}</span></td>
+                        </tr>
+                    `;
+                }
+            }
+            if(tbodyHtml === '') tbodyHtml = '<tr><td colspan="3" class="text-center p-4 text-slate-400">Data analisis tidak tersedia</td></tr>';
+            document.getElementById('report-table-body').innerHTML = tbodyHtml;
+
+            lucide.createIcons();
+        }
+
+        function closeReport() { document.getElementById('view-report-detail').classList.add('hidden'); switchTab('result'); }
+        function printReport() { 
+            const element = document.getElementById('printable-report');
+            const opt = { margin: 0.5, filename: `Report_${currentStudent.nisn}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            showToast('Menyiapkan Dokumen PDF...', 'info'); html2pdf().set(opt).from(element).save();
+        }
+
+        /* ANTI-CHEAT LISTENER */
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && inTestMode) {
+                warningsCount++;
+                const badge = document.getElementById('warning-badge');
+                badge.classList.remove('hidden'); badge.classList.add('flex');
+                document.getElementById('warning-count-text').innerText = `Peringatan: ${warningsCount}/3`;
+                if (warningsCount >= 3) { alert("PELANGGARAN MAKSIMAL! Ujian dihentikan paksa."); processSubmitTest(); } 
+                else { showModal('Peringatan Pelanggaran!', `Kamu terdeteksi berpindah tab. (Peringatan ${warningsCount} dari 3). Jika mencapai 3 kali, ujian otomatis disubmit!`, 'alert-triangle', 'Kembali Fokus', 'red'); }
+            }
+        });
+
+        function switchTab(tabName) {
+            ['progress', 'test', 'result'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-blue-200 hover:text-white hover:bg-blue-900/50 transition';
+                const mNav = document.getElementById(`mob-nav-${t}`);
+                mNav.className = 'flex flex-col items-center p-2 text-slate-400 nav-btn-mobile';
+                mNav.querySelector('div').className = 'p-1.5 rounded-full mb-1 border border-transparent';
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabName}`).className = `nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-aw-blue text-white shadow-md font-bold transition`;
+            const activeMNav = document.getElementById(`mob-nav-${tabName}`);
+            activeMNav.className = 'flex flex-col items-center p-2 text-aw-blue nav-btn-mobile';
+            activeMNav.querySelector('div').className = `p-1.5 bg-blue-100 rounded-full mb-1`;
+            document.getElementById('view-report-detail').classList.add('hidden');
+            activeTab = tabName; window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
