@@ -887,7 +887,19 @@
             cbtQuestions.forEach((q, index) => {
                 let classes = 'btn-num flex items-center justify-center font-bold border border-slate-200 text-slate-600 bg-white cursor-pointer hover:bg-slate-50 shadow-sm';
                 if(cbtDoubts[index]) classes += ' doubt';
-                else if(cbtAnswers[index] !== undefined && cbtAnswers[index] !== '' && cbtAnswers[index].length !== 0) classes += ' answered';
+                
+                // Pengecekan status terjawab berdasarkan tipe
+                let isAnswered = false;
+                if(q.type === 'kategori') {
+                    // Untuk kategori, dianggap terjawab jika minimal ada 1 baris yang dipilih
+                    isAnswered = cbtAnswers[index] && Object.keys(cbtAnswers[index]).length > 0;
+                } else if(q.type === 'isian_singkat' || q.type === 'essay') {
+                    isAnswered = cbtAnswers[index] && String(cbtAnswers[index]).trim() !== '';
+                } else {
+                    isAnswered = cbtAnswers[index] !== undefined && cbtAnswers[index] !== '' && cbtAnswers[index].length !== 0;
+                }
+                
+                if(isAnswered) classes += ' answered';
                 if(index === cbtCurrentIndex) classes += ' active';
                 grid.innerHTML += `<button onclick="jumpToQuestion(${index})" class="${classes}">${index + 1}</button>`;
             });
@@ -922,6 +934,8 @@
 
             html += `<h4 class="text-sm font-bold text-slate-900 mb-6 leading-relaxed">${q.question}</h4>`;
 
+            // ===== CABANG BARU UNTUK 5 TIPE SOAL =====
+            
             if(q.type === 'pg_tunggal' || q.type === 'pg_majemuk') {
                 html += '<div class="space-y-3">';
                 Object.keys(q.options).forEach(optKey => {
@@ -950,6 +964,53 @@
                     }
                 });
                 html += '</div>';
+            } 
+            else if (q.type === 'kategori') {
+                // Ekstrak struktur data kategori yang aman
+                let headers = q.options.headers || ["Benar", "Salah"]; 
+                let rows = [];
+                // Cek kemungkinan variasi nama variabel dari database
+                if (Array.isArray(q.options.rows)) rows = q.options.rows;
+                else if (Array.isArray(q.options.pernyataan)) rows = q.options.pernyataan;
+                
+                // Ubah object ke string jika JSON database bentuk array of object
+                rows = rows.map(r => typeof r === 'object' ? (r.pernyataan || r.teks || r.row || '') : r);
+                
+                let ansObj = cbtAnswers[cbtCurrentIndex] || {};
+
+                html += '<div class="overflow-x-auto rounded-xl border-2 border-slate-100 shadow-sm"><table class="w-full text-left border-collapse bg-white">';
+                html += '<thead><tr class="bg-slate-50 border-b-2 border-slate-100"><th class="p-4 text-sm font-bold text-slate-700 uppercase tracking-wide">Pernyataan</th>';
+                headers.forEach(h => {
+                    html += `<th class="p-4 text-center font-bold text-slate-700 text-sm uppercase tracking-wide border-l border-slate-100">${h}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                rows.forEach((rowText, rIdx) => {
+                    html += `<tr class="hover:bg-blue-50/50 transition-colors border-b border-slate-100 last:border-0"><td class="p-4 text-sm font-medium text-slate-700">${rowText}</td>`;
+                    headers.forEach((h) => {
+                        let isChecked = ansObj[rIdx] === h ? 'checked' : '';
+                        html += `<td class="p-4 text-center border-l border-slate-100">
+                            <label class="cursor-pointer inline-flex items-center justify-center w-full h-full p-2">
+                                <input type="radio" name="cat_opt_${rIdx}" value="${h}" onchange="saveCategoryAnswer(${rIdx}, '${h}')" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer" ${isChecked}>
+                            </label>
+                        </td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody></table></div>';
+            }
+            else if (q.type === 'isian_singkat') {
+                let val = cbtAnswers[cbtCurrentIndex] || '';
+                html += `<div>
+                    <input type="text" value="${val}" oninput="saveTextAnswer(this.value)" placeholder="Ketik jawaban singkat di sini..." class="w-full p-4 bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-slate-800 font-bold shadow-sm">
+                </div>`;
+            }
+            else if (q.type === 'essay') {
+                let val = cbtAnswers[cbtCurrentIndex] || '';
+                html += `<div>
+                    <textarea oninput="saveTextAnswer(this.value)" rows="6" placeholder="Ketik uraian jawaban secara detail di sini..." class="w-full p-4 bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-slate-800 font-medium shadow-sm resize-y leading-relaxed">${val}</textarea>
+                    <p class="mt-2 text-[10px] font-bold text-aw-yellow flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Soal essay membutuhkan koreksi manual dari guru.</p>
+                </div>`;
             }
 
             document.getElementById('cbt-content-dynamic').innerHTML = html;
@@ -960,6 +1021,7 @@
             });
         }
 
+        // Fungsi Simpan Jawaban
         function saveAnswer(val) { cbtAnswers[cbtCurrentIndex] = val; renderNumberGrid(); }
         function saveMultiAnswer(el) {
             let arr = cbtAnswers[cbtCurrentIndex] || [];
@@ -968,6 +1030,18 @@
             cbtAnswers[cbtCurrentIndex] = arr;
             renderNumberGrid(); renderCurrentQuestion(); 
         }
+        function saveCategoryAnswer(rowIdx, val) {
+            if(!cbtAnswers[cbtCurrentIndex] || typeof cbtAnswers[cbtCurrentIndex] !== 'object' || Array.isArray(cbtAnswers[cbtCurrentIndex])) {
+                cbtAnswers[cbtCurrentIndex] = {};
+            }
+            cbtAnswers[cbtCurrentIndex][rowIdx] = val;
+            renderNumberGrid();
+        }
+        function saveTextAnswer(val) {
+            cbtAnswers[cbtCurrentIndex] = val;
+            renderNumberGrid();
+        }
+
         function toggleDoubt() { cbtDoubts[cbtCurrentIndex] = !cbtDoubts[cbtCurrentIndex]; renderNumberGrid(); renderCurrentQuestion(); }
         function navQuestion(dir) {
             cbtCurrentIndex += dir;
@@ -995,16 +1069,59 @@
             let subtopicAnalysis = {}; 
 
             cbtQuestions.forEach((q, idx) => {
-                let isCorrect = false; let userAns = cbtAnswers[idx];
+                let isCorrect = false; 
+                let userAns = cbtAnswers[idx];
                 let keyArr = [];
+                
+                // Parsing Kunci Jawaban Database
                 try { keyArr = typeof q.answerKey === 'string' && q.answerKey.includes('[') ? JSON.parse(q.answerKey) : [q.answerKey]; } catch(e) { keyArr = [q.answerKey]; }
 
-                if(q.type === 'pg_tunggal') isCorrect = (userAns === keyArr[0]);
+                // ====== LOGIKA KOREKSI OTOMATIS ======
+                if(q.type === 'pg_tunggal') {
+                    isCorrect = (userAns === keyArr[0]);
+                } 
                 else if(q.type === 'pg_majemuk') {
                     let uArr = userAns || [];
                     isCorrect = (keyArr.length === uArr.length && keyArr.every(v => uArr.includes(v)));
                 }
+                else if(q.type === 'kategori') {
+                    // Kunci kategori bisa berformat ["Benar", "Salah"] atau {"0":"Benar", "1":"Salah"}
+                    let expectedObj = {};
+                    try {
+                        if (Array.isArray(keyArr[0])) expectedObj = Object.assign({}, keyArr[0]);
+                        else if (typeof keyArr[0] === 'object') expectedObj = keyArr[0];
+                        else expectedObj = JSON.parse(keyArr[0]);
+                    } catch(e) { expectedObj = keyArr; } // Fallback array biasa
+                    
+                    let uObj = userAns || {};
+                    let allRowsMatch = true;
+                    
+                    // Cek total baris dari opsi
+                    let rowCount = 0;
+                    if(q.options.rows) rowCount = q.options.rows.length;
+                    else if (q.options.pernyataan) rowCount = q.options.pernyataan.length;
+                    
+                    if(rowCount > 0) {
+                        for(let i=0; i<rowCount; i++) {
+                            // Harus teliti, membandingkan setiap baris dengan kuncinya
+                            if(uObj[i] !== expectedObj[i] && uObj[i] !== expectedObj[i.toString()]) allRowsMatch = false;
+                        }
+                        isCorrect = allRowsMatch;
+                    }
+                }
+                else if (q.type === 'isian_singkat') {
+                    // Validasi: Abaikan huruf besar/kecil & spasi ekstra (Case-insensitive)
+                    let uStr = String(userAns || '').toLowerCase().trim();
+                    let kStr = String(keyArr[0] || '').toLowerCase().trim();
+                    isCorrect = (uStr !== '' && uStr === kStr);
+                }
+                else if (q.type === 'essay') {
+                    // Essay default disalahkan dulu (0 poin) untuk kalkulasi otomatis, 
+                    // karena guru perlu koreksi secara manual di Spreadsheets.
+                    isCorrect = false; 
+                }
                 
+                // Perekaman Topik & Sub-topik
                 let topName = q.topic || 'Umum';
                 let subName = q.subTopik || 'Campuran';
                 
