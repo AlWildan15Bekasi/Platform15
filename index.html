@@ -970,7 +970,8 @@
                 let headers = q.options.headers || ["Benar", "Salah"]; 
                 let rows = [];
                 // Cek kemungkinan variasi nama variabel dari database
-                if (Array.isArray(q.options.rows)) rows = q.options.rows;
+                if (Array.isArray(q.options.statements)) rows = q.options.statements;
+                else if (Array.isArray(q.options.rows)) rows = q.options.rows;
                 else if (Array.isArray(q.options.pernyataan)) rows = q.options.pernyataan;
                 
                 // Ubah object ke string jika JSON database bentuk array of object
@@ -1098,7 +1099,8 @@
                     
                     // Cek total baris dari opsi
                     let rowCount = 0;
-                    if(q.options.rows) rowCount = q.options.rows.length;
+                    if(q.options.statements) rowCount = q.options.statements.length;
+                    else if(q.options.rows) rowCount = q.options.rows.length;
                     else if (q.options.pernyataan) rowCount = q.options.pernyataan.length;
                     
                     if(rowCount > 0) {
