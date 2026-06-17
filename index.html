@@ -458,8 +458,11 @@
 
         let currentStudent = null;
         let activeTab = 'progress';
-        let availableExams = [];
+        
+        let availableExams = []; // Wadah 1: Semua ujian (utk riwayat nilai)
+        let activeExamsForStudent = []; // Wadah 2: Ujian terfilter sesuai kelas
         let studentResults = [];
+        
         let lineChartInstance, radarChartInstance;
         let currentFilter = 'all'; // State Filter Jenis Ujian
         
@@ -553,6 +556,7 @@
         function getFilteredResults() {
             if (currentFilter === 'all') return studentResults;
             return studentResults.filter(res => {
+                // Menggunakan availableExams (karena mencakup data ujian history)
                 let ex = availableExams.find(x => String(x.idUjian).trim() === String(res.idUjian).trim());
                 return ex && ex.jenisUjian && String(ex.jenisUjian).trim().toLowerCase() === currentFilter.toLowerCase();
             });
@@ -601,6 +605,17 @@
 
             availableExams = examsRes.status === 'success' ? examsRes.data : [];
             studentResults = resultsRes.status === 'success' ? resultsRes.data : [];
+
+            // FILTER: Ekstrak angka dari kelas siswa (contoh: "12 DI 1" -> "12")
+            const matchGrade = currentStudent.kelas.match(/^\d+/);
+            const studentGrade = matchGrade ? matchGrade[0] : null;
+
+            if (studentGrade) {
+                // Hanya ujian yang Kelas_Target-nya SAMA dengan angka kelas siswa
+                activeExamsForStudent = availableExams.filter(ex => String(ex.kelasTarget || '').trim() === studentGrade);
+            } else {
+                activeExamsForStudent = availableExams; // Fallback jika kelas siswa tidak ada angkanya
+            }
 
             updateDashboardStats();
             renderSubjects();
@@ -743,10 +758,11 @@
 
         /* ======== MENU UJIAN ======== */
         function renderSubjects() {
-            let uniqueSubjects = [...new Set(availableExams.map(ex => ex.mataPelajaran))];
+            // Gunakan activeExamsForStudent yang sudah disaring sesuai kelas
+            let uniqueSubjects = [...new Set(activeExamsForStudent.map(ex => ex.mataPelajaran))];
             const container = document.getElementById('subject-selection');
             container.innerHTML = '';
-            if(uniqueSubjects.length === 0) { container.innerHTML = '<p class="text-slate-500 italic col-span-2">Belum ada ujian yang tersedia saat ini.</p>'; return; }
+            if(uniqueSubjects.length === 0) { container.innerHTML = '<p class="text-slate-500 italic col-span-2">Belum ada ujian yang tersedia untuk jenjang kelasmu saat ini.</p>'; return; }
 
             uniqueSubjects.forEach(subjectName => {
                 let style = getSubjectStyle(subjectName);
@@ -770,7 +786,8 @@
             const container = document.getElementById('to-cards-container');
             container.innerHTML = '';
             
-            const tests = availableExams.filter(t => t.mataPelajaran === subjectName);
+            // Gunakan activeExamsForStudent yang sudah disaring sesuai kelas
+            const tests = activeExamsForStudent.filter(t => t.mataPelajaran === subjectName);
             tests.forEach(t => {
                 const isCompleted = studentResults.some(res => String(res.idUjian).trim() === String(t.idUjian).trim());
                 
