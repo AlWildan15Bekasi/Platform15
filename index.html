@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal - CBT Al Wildan 15</title>
+    <title>Teacher Portal - CBT Al Wildan 15</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -137,7 +137,10 @@
             <div id="modal-icon" class="flex items-center justify-center w-20 h-20 rounded-full mb-5 bg-slate-50 text-blue-600 shadow-inner"></div>
             <h3 id="modal-title" class="text-xl font-black text-slate-800 mb-2"></h3>
             <p id="modal-desc" class="text-slate-500 mb-8 font-medium text-sm leading-relaxed"></p>
-            <button id="modal-btn" class="w-full font-bold py-3.5 rounded-xl transition btn-primary text-white"></button>
+            <div class="flex gap-3 w-full">
+                <button id="modal-btn-cancel" class="hidden w-full font-bold py-3.5 rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200"></button>
+                <button id="modal-btn" class="w-full font-bold py-3.5 rounded-xl transition btn-primary text-white"></button>
+            </div>
         </div>
     </div>
     <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9998] hidden transition-opacity duration-300 opacity-0"></div>
@@ -146,13 +149,13 @@
     <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden bg-white/20 backdrop-blur-sm">
         <div class="glass-card p-10 md:p-12 w-full max-w-md relative z-10 text-center">
             <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center bg-white rounded-full shadow-lg p-3 border border-slate-100">
-                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo AW15" class="w-full h-full object-contain relative z-10">
+                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo AW15" class="w-full h-full object-contain relative z-10" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M2ViIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIgM2gyMCIvPjxwYXRoIGQ9Ik0yMSAzdiIxOGEyaGVhbTItMiAySDVhMiAyIDAgMCAxLTItMlYzIi8+PHBhdGggZD0iTTEwIDh2OCIvPjxwYXRoIGQ9Ik0xNCA4djgiLz48cGF0aCBkPSJNMTAgMTJoNCIvPjwvc3ZnPg=='">
             </div>
-            <h1 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight">Student Portal</h1>
+            <h1 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight">Teacher Portal</h1>
             <p class="text-xs font-bold text-aw-yellow uppercase tracking-widest mb-10 drop-shadow-sm">CBT Al Wildan 15</p>
             <form id="login-form" class="space-y-5 text-left">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">ID Siswa / NISN</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">ID Guru</label>
                     <div class="relative">
                         <i data-lucide="user" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400"></i>
                         <input type="text" id="nisn" class="w-full pl-12 pr-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white outline-none transition placeholder-slate-400 shadow-inner" placeholder="Masukkan ID..." required>
@@ -177,7 +180,7 @@
         <!-- Sidebar -->
         <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-aw-navy text-slate-300 h-full z-20 shadow-2xl relative border-r border-blue-900/50">
             <div class="p-6 flex items-center gap-3 border-b border-blue-800/50">
-                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-10 h-10 bg-white rounded-full p-1 shadow-sm">
+                <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-10 h-10 bg-white rounded-full p-1 shadow-sm" onerror="this.style.display='none'">
                 <div>
                     <h2 class="font-bold text-white tracking-wide">CBT Portal</h2>
                     <p class="text-[10px] text-aw-yellow font-bold uppercase tracking-widest">Al Wildan 15</p>
@@ -213,7 +216,7 @@
             <!-- Header Mobile -->
             <header class="md:hidden bg-aw-navy border-b border-blue-900/50 text-white p-4 flex justify-between items-center sticky top-0 z-20 shadow-lg">
                 <div class="flex items-center gap-2">
-                    <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-8 h-8 bg-white rounded-full p-0.5 shadow-sm">
+                    <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-8 h-8 bg-white rounded-full p-0.5 shadow-sm" onerror="this.style.display='none'">
                     <h2 class="font-bold tracking-wide">CBT Portal</h2>
                 </div>
                 <button onclick="doLogout()" class="text-red-400 p-2"><i data-lucide="log-out" class="w-5 h-5"></i></button>
@@ -223,17 +226,16 @@
             <div id="view-progress" class="p-4 md:p-8 animate-fade-in max-w-6xl mx-auto">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Dashboard Belajar</h2>
-                        <p class="text-slate-600 font-medium text-sm">Pantau perkembangan hasil ujimu di sini.</p>
+                        <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Dashboard Seleksi</h2>
+                        <p class="text-slate-600 font-medium text-sm">Kejujuran adalah utama.</p>
                     </div>
                     <!-- DROPDOWN JENIS TES -->
                     <div class="relative w-full sm:w-auto">
                         <select id="test-type-filter" class="w-full appearance-none bg-white/80 backdrop-blur border border-white text-aw-navy px-4 py-2.5 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-aw-blue shadow-sm cursor-pointer transition">
                             <option value="all">Semua Jenis Tes</option>
-                            <option value="tka">TKA</option>
-                            <option value="snbt">SNBT</option>
-                            <option value="sat">SAT</option>
-                            <option value="saj">SAJ</option>
+                            <option value="Recruitment Test">Recruitment Test</option>
+                            <option value="Comprehensive Test">Comprehensive Test</option>
+                            <option value="Mapping Test">Mapping Test</option>
                         </select>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none"></i>
                     </div>
@@ -322,7 +324,7 @@
 
                 <div id="printable-report" class="max-w-4xl mx-auto bg-white p-8 md:p-12 shadow-xl rounded-2xl text-slate-800 print:shadow-none print:p-0 print:m-0 font-sans border border-slate-200">
                     <div class="text-center border-b-[2px] border-slate-100 pb-6 mb-8">
-                        <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-20 h-20 mx-auto mb-4">
+                        <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo" class="w-20 h-20 mx-auto mb-4" onerror="this.style.display='none'">
                         <h1 class="text-3xl md:text-4xl font-black text-aw-navy uppercase tracking-widest mb-1">Laporan Hasil Ujian</h1>
                         <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Evaluasi Pembelajaran Mandiri</p>
                     </div>
@@ -454,7 +456,7 @@
         lucide.createIcons();
 
         /* ======== LINK API GOOGLE APPS SCRIPT ======== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbxoiGCoEl-mktO9pQtQxDXHIixp-eqToLUIfr10DgazZnu8y0AErvE5ju2UShC_xPuncg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbytxKcPHU1IVI-xxEkbrFSjR-cOxNDTyUJSLQ8DEMvdPXS8auTd6MmXB72xJ44-U5DfuQ/exec";
 
         let currentStudent = null;
         let activeTab = 'progress';
@@ -468,7 +470,7 @@
         
         let currentExamInfo = {};
         let cbtQuestions = [];
-        let inTestMode = false, cbtCurrentIndex = 0, cbtAnswers = {}, cbtDoubts = {}, cbtTimerInterval, timeLeft = 0, warningsCount = 0;
+        let inTestMode = false, cbtCurrentIndex = 0, cbtAnswers = {}, cbtDoubts = {}, cbtTimerInterval, timeLeft = 0;
 
         /* ======== HELPER FUNCTIONS ======== */
         async function callAPI(payload) {
@@ -498,7 +500,7 @@
             let color = 'text-blue-400';
             if(type === 'success') color = 'text-green-400';
             if(type === 'error' || type === 'warning') color = 'text-red-400';
-            toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] px-6 py-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] text-white font-bold text-sm transition-all duration-300 scale-100 opacity-100 flex items-center gap-3 bg-slate-800/95 backdrop-blur-md`;
+            toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] px-6 py-4 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] text-white font-bold text-sm sm:text-base transition-all duration-300 scale-100 opacity-100 flex items-center gap-3 bg-slate-800/95 backdrop-blur-md`;
             toast.innerHTML = `<i data-lucide="${type==='success'?'check-circle':(type==='error'?'alert-triangle':'info')}" class="w-5 h-5 ${color}"></i> ${msg}`;
             lucide.createIcons();
             setTimeout(() => {
@@ -508,7 +510,7 @@
             }, 3000);
         }
 
-        function showModal(title, desc, iconName, btnText, colorClass, callback) {
+        function showModal(title, desc, iconName, btnText, colorClass, callback, cancelText = null, cancelCallback = null) {
             const modal = document.getElementById('custom-modal');
             const overlay = document.getElementById('modal-overlay');
             document.getElementById('modal-title').innerText = title;
@@ -528,6 +530,18 @@
                 modal.classList.add('opacity-0'); overlay.classList.add('opacity-0');
                 setTimeout(() => { modal.classList.add('hidden'); overlay.classList.add('hidden'); if(callback) callback(); }, 300);
             };
+
+            const btnCancel = document.getElementById('modal-btn-cancel');
+            if(cancelText) {
+                btnCancel.innerText = cancelText;
+                btnCancel.classList.remove('hidden');
+                btnCancel.onclick = () => {
+                    modal.classList.add('opacity-0'); overlay.classList.add('opacity-0');
+                    setTimeout(() => { modal.classList.add('hidden'); overlay.classList.add('hidden'); if(cancelCallback) cancelCallback(); }, 300);
+                };
+            } else {
+                btnCancel.classList.add('hidden');
+            }
 
             overlay.classList.remove('hidden'); modal.classList.remove('hidden');
             setTimeout(() => { overlay.classList.remove('opacity-0'); modal.classList.remove('opacity-0'); }, 10);
@@ -593,7 +607,7 @@
         });
 
         function doLogout() {
-            showModal('Konfirmasi Logout', 'Apakah kamu yakin ingin keluar dari portal ujian?', 'log-out', 'Keluar', 'red', () => { location.reload(); });
+            showModal('Konfirmasi Logout', 'Apakah kamu yakin ingin keluar dari portal ujian?', 'log-out', 'Keluar', 'red', () => { location.reload(); }, 'Batal');
         }
 
         /* ======== DASHBOARD ======== */
@@ -603,11 +617,26 @@
                 callAPI({ action: 'get_student_results', nisn: currentStudent.nisn })
             ]);
 
-            availableExams = examsRes.status === 'success' ? examsRes.data : [];
+            // MAPPING OTOMATIS: Menjembatani nama header Database (_case) dengan variabel Javascript (camelCase)
+            let rawExams = examsRes.status === 'success' ? examsRes.data : [];
+            availableExams = rawExams.map(item => {
+                return {
+                    ...item, // Bawa semua data bawaan dari API
+                    idUjian: item.idUjian || item.ID_Ujian || item.Id_Ujian,
+                    judulUjian: item.judulUjian || item.Judul_Ujian,
+                    mataPelajaran: item.mataPelajaran || item.Mata_Pelajaran,
+                    kelasTarget: item.kelas || item.kelasTarget || item.Kelas_Target,
+                    jenisUjian: item.jenisUjian || item.Jenis_Ujian,
+                    durasi: item.durasi || item.Durasi_Menit,
+                    totalSoal: item.totalSoal || item.Jumlah_Soal_Target
+                };
+            });
+
             studentResults = resultsRes.status === 'success' ? resultsRes.data : [];
 
             // FILTER: Ekstrak angka dari kelas siswa (contoh: "12 DI 1" -> "12")
-            const matchGrade = currentStudent.kelas.match(/^\d+/);
+            const kelasString = String(currentStudent.kelas || '');
+            const matchGrade = kelasString.match(/^\d+/);
             const studentGrade = matchGrade ? matchGrade[0] : null;
 
             if (studentGrade) {
@@ -766,8 +795,12 @@
 
             uniqueSubjects.forEach(subjectName => {
                 let style = getSubjectStyle(subjectName);
+                
+                // Mencegah error jika ada tanda petik (') atau (") pada nama mata pelajaran
+                let safeSubjectName = subjectName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
                 container.innerHTML += `
-                    <div onclick="showTestList('${subjectName}')" class="glass-card p-6 text-center cursor-pointer group hover:bg-white transition-all duration-300">
+                    <div onclick="showTestList('${safeSubjectName}')" class="glass-card p-6 text-center cursor-pointer group hover:bg-white transition-all duration-300">
                         <div class="w-16 h-16 mx-auto rounded-2xl bg-${style.color}-100 text-${style.color}-600 flex items-center justify-center mb-4 group-hover:bg-${style.color}-500 group-hover:text-white transition shadow-sm border border-${style.color}-200">
                             <i data-lucide="${style.icon}" class="w-8 h-8"></i>
                         </div>
@@ -791,6 +824,9 @@
             tests.forEach(t => {
                 const isCompleted = studentResults.some(res => String(res.idUjian).trim() === String(t.idUjian).trim());
                 
+                // Mencegah error jika ada tanda petik (') atau (") pada judul ujian
+                let safeJudul = (t.judulUjian || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
                 container.innerHTML += `
                     <div class="glass-card p-6 flex flex-col justify-between h-full bg-white/80">
                         <div>
@@ -804,7 +840,7 @@
                             </div>
                         </div>
                         ${!isCompleted 
-                            ? `<button onclick="startTest('${t.idUjian}', '${t.judulUjian}', '${t.durasi}')" class="w-full py-3 btn-primary rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-md hover:shadow-lg">Mulai Ujian <i data-lucide="arrow-right" class="w-4 h-4"></i></button>`
+                            ? `<button onclick="startTest('${t.idUjian}', '${safeJudul}', '${t.durasi}')" class="w-full py-3 btn-primary rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-md hover:shadow-lg">Mulai Ujian <i data-lucide="arrow-right" class="w-4 h-4"></i></button>`
                             : `<button disabled class="w-full py-3 bg-slate-100 border border-slate-200 text-slate-400 font-bold text-sm rounded-xl cursor-not-allowed">Sudah Dikerjakan</button>`
                         }
                     </div>
@@ -832,53 +868,61 @@
         }
 
         async function startTest(testId, title, durationMinutes) {
-            showModal('Peringatan Tata Tertib', `Dilarang keras membuka tab/aplikasi lain. Pastikan koneksi stabil.`, 'alert-octagon', 'Saya Mengerti, Mulai', 'blue', async () => {
-                showToast('Mengambil data soal dari server...', 'info');
-                const res = await callAPI({ action: 'get_exam_data', idUjian: testId });
+            showModal(
+                'Peringatan Tata Tertib', 
+                'CBT Platform ini menggunakan auto submitted jika kamu pindah tab. Pindah tab = curang. Apakah kamu memahami informasi ini?', 
+                'alert-octagon', 
+                'Paham, Mulai', 
+                'blue', 
+                async () => {
+                    showToast('Mengambil data soal dari server...', 'info');
+                    const res = await callAPI({ action: 'get_exam_data', idUjian: testId });
 
-                if(res.status !== 'success' || !res.soal || res.soal.length === 0) {
-                    showToast('Gagal memuat soal. Silakan coba lagi.', 'error'); return;
-                }
-
-                currentExamInfo = res.identitas;
-                cbtQuestions = res.soal.map(q => {
-                    let opsiArr = [];
-                    try { opsiArr = JSON.parse(q.dataOpsi); } catch(e){}
-                    return {
-                        id: q.nomorSoal, type: q.tipeSoal,
-                        stimulus: q.stimulus, question: q.soalUtama,
-                        options: opsiArr, answerKey: q.kunciJawaban, 
-                        topic: q.topik, subTopik: q.subTopik,
-                        urlGambar: q.urlGambar 
-                    };
-                });
-
-                document.getElementById('app-view').classList.add('hidden');
-                document.getElementById('test-execution-view').classList.remove('hidden');
-                document.getElementById('test-execution-view').classList.add('flex');
-                document.getElementById('cbt-title').innerText = title;
-                document.getElementById('cbt-student').innerText = `${currentStudent.nama} [${currentStudent.nisn}]`;
-
-                inTestMode = true; cbtCurrentIndex = 0; cbtAnswers = {}; cbtDoubts = {}; warningsCount = 0;
-                document.getElementById('warning-badge').classList.add('hidden');
-
-                let dur = parseInt(durationMinutes);
-                if (isNaN(dur) || dur <= 0) dur = 60; // fallback 60 menit
-                timeLeft = dur * 60;
-                
-                updateTimerDisplay();
-                cbtTimerInterval = setInterval(() => {
-                    timeLeft--; updateTimerDisplay();
-                    if(timeLeft <= 0) {
-                        clearInterval(cbtTimerInterval);
-                        showToast('Waktu Habis! Ujian otomatis dikumpulkan.', 'error');
-                        processSubmitTest();
+                    if(res.status !== 'success' || !res.soal || res.soal.length === 0) {
+                        showToast('Gagal memuat soal. Silakan coba lagi.', 'error'); return;
                     }
-                }, 1000);
 
-                renderNumberGrid();
-                renderCurrentQuestion();
-            });
+                    currentExamInfo = res.identitas;
+                    cbtQuestions = res.soal.map(q => {
+                        let opsiArr = [];
+                        try { opsiArr = JSON.parse(q.dataOpsi); } catch(e){}
+                        return {
+                            id: q.nomorSoal, type: q.tipeSoal,
+                            stimulus: q.stimulus, question: q.soalUtama,
+                            options: opsiArr, answerKey: q.kunciJawaban, 
+                            topic: q.topik, subTopik: q.subTopik,
+                            urlGambar: q.urlGambar 
+                        };
+                    });
+
+                    document.getElementById('app-view').classList.add('hidden');
+                    document.getElementById('test-execution-view').classList.remove('hidden');
+                    document.getElementById('test-execution-view').classList.add('flex');
+                    document.getElementById('cbt-title').innerText = title;
+                    document.getElementById('cbt-student').innerText = `${currentStudent.nama} [${currentStudent.nisn}]`;
+
+                    inTestMode = true; cbtCurrentIndex = 0; cbtAnswers = {}; cbtDoubts = {};
+                    document.getElementById('warning-badge').classList.add('hidden');
+
+                    let dur = parseInt(durationMinutes);
+                    if (isNaN(dur) || dur <= 0) dur = 60; // fallback 60 menit
+                    timeLeft = dur * 60;
+                    
+                    updateTimerDisplay();
+                    cbtTimerInterval = setInterval(() => {
+                        timeLeft--; updateTimerDisplay();
+                        if(timeLeft <= 0) {
+                            clearInterval(cbtTimerInterval);
+                            showToast('Waktu Habis! Ujian otomatis dikumpulkan.', 'error');
+                            processSubmitTest();
+                        }
+                    }, 1000);
+
+                    renderNumberGrid();
+                    renderCurrentQuestion();
+                },
+                'Batal'
+            );
         }
 
         function renderNumberGrid() {
@@ -1053,7 +1097,7 @@
         }
         function jumpToQuestion(idx) { cbtCurrentIndex = idx; renderNumberGrid(); renderCurrentQuestion(); document.getElementById('cbt-question-area').scrollTo(0,0); }
 
-        function confirmSubmitTest() { showModal('Konfirmasi Kumpul', 'Apakah kamu yakin ingin mengakhiri ujian dan mengirimkan semua jawaban?', 'help-circle', 'Kumpulkan Sekarang', 'blue', processSubmitTest); }
+        function confirmSubmitTest() { showModal('Konfirmasi Kumpul', 'Apakah kamu yakin ingin mengakhiri ujian dan mengirimkan semua jawaban?', 'help-circle', 'Kumpulkan Sekarang', 'blue', processSubmitTest, 'Batal'); }
 
         /* ======== GRADING & SUBMIT ======== */
         async function processSubmitTest() {
@@ -1233,15 +1277,11 @@
             showToast('Menyiapkan Dokumen PDF...', 'info'); html2pdf().set(opt).from(element).save();
         }
 
-        /* ANTI-CHEAT LISTENER */
+        /* ANTI-CHEAT LISTENER (ZERO TOLERANCE) */
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && inTestMode) {
-                warningsCount++;
-                const badge = document.getElementById('warning-badge');
-                badge.classList.remove('hidden'); badge.classList.add('flex');
-                document.getElementById('warning-count-text').innerText = `Peringatan: ${warningsCount}/3`;
-                if (warningsCount >= 3) { alert("PELANGGARAN MAKSIMAL! Ujian dihentikan paksa."); processSubmitTest(); } 
-                else { showModal('Peringatan Pelanggaran!', `Kamu terdeteksi berpindah tab. (Peringatan ${warningsCount} dari 3). Jika mencapai 3 kali, ujian otomatis disubmit!`, 'alert-triangle', 'Kembali Fokus', 'red'); }
+                showToast("PELANGGARAN TERDETEKSI! Ujian dikumpulkan otomatis.", "error");
+                processSubmitTest(); 
             }
         });
 
