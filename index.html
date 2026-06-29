@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Portal - CBT Al Wildan 15</title>
+    <title>Student Portal - CBT Al Wildan 15</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -151,11 +151,11 @@
             <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center bg-white rounded-full shadow-lg p-3 border border-slate-100">
                 <img src="https://images2.imgbox.com/09/93/eLDrLgwH_o.png" alt="Logo AW15" class="w-full h-full object-contain relative z-10" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M2ViIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIgM2gyMCIvPjxwYXRoIGQ9Ik0yMSAzdiIxOGEyaGVhbTItMiAySDVhMiAyIDAgMCAxLTItMlYzIi8+PHBhdGggZD0iTTEwIDh2OCIvPjxwYXRoIGQ9Ik0xNCA4djgiLz48cGF0aCBkPSJNMTAgMTJoNCIvPjwvc3ZnPg=='">
             </div>
-            <h1 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight">Teacher Portal</h1>
+            <h1 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight">Student Portal</h1>
             <p class="text-xs font-bold text-aw-yellow uppercase tracking-widest mb-10 drop-shadow-sm">CBT Al Wildan 15</p>
             <form id="login-form" class="space-y-5 text-left">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">ID Guru</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide ml-1">ID Siswa / NISN</label>
                     <div class="relative">
                         <i data-lucide="user" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400"></i>
                         <input type="text" id="nisn" class="w-full pl-12 pr-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white outline-none transition placeholder-slate-400 shadow-inner" placeholder="Masukkan ID..." required>
@@ -226,16 +226,21 @@
             <div id="view-progress" class="p-4 md:p-8 animate-fade-in max-w-6xl mx-auto">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Dashboard Seleksi</h2>
-                        <p class="text-slate-600 font-medium text-sm">Kejujuran adalah utama.</p>
+                        <h2 class="text-2xl md:text-3xl font-black text-aw-navy mb-1 tracking-tight drop-shadow-sm">Dashboard Ujian</h2>
+                        <p class="text-slate-600 font-medium text-sm">Monitoring progress ujianmu secara real-time.</p>
                     </div>
                     <!-- DROPDOWN JENIS TES -->
                     <div class="relative w-full sm:w-auto">
                         <select id="test-type-filter" class="w-full appearance-none bg-white/80 backdrop-blur border border-white text-aw-navy px-4 py-2.5 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-aw-blue shadow-sm cursor-pointer transition">
                             <option value="all">Semua Jenis Tes</option>
-                            <option value="Recruitment Test">Recruitment Test</option>
-                            <option value="Comprehensive Test">Comprehensive Test</option>
-                            <option value="Mapping Test">Mapping Test</option>
+                            <option value="TKA">TKA</option>
+                            <option value="SNBT">SNBT</option>
+                            <option value="Mandiri">Mandiri</option>
+                            <option value="STS Ganjil">STS Ganjil</option>
+                            <option value="SAS Ganjil">SAS Ganjil</option>
+                            <option value="STS Genap">STS Genap</option>
+                            <option value="SAJ">SAJ</option>
+                            <option value="SAT">SAT</option>
                         </select>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none"></i>
                     </div>
@@ -262,7 +267,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="glass-card p-6">
                         <h3 class="font-bold text-aw-navy mb-6 flex items-center gap-2 text-sm tracking-wide">
-                            <span class="p-1.5 bg-blue-100 text-aw-blue rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></span> Tren Hasil Belajar
+                            <span class="p-1.5 bg-blue-100 text-aw-blue rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></span> Tren Nilai Ujian / Try Out
                         </h3>
                         <div class="w-full h-64 relative"><canvas id="lineChart"></canvas></div>
                     </div>
